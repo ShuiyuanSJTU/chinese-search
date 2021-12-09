@@ -1,4 +1,0 @@
-plugins:
-  chinese_search_enabled:
-    default: true
-    client: true
