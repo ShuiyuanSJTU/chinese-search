@@ -76,19 +76,24 @@ after_initialize do
     singleton_class.prepend OverridingPrepareData
   end
 
-  Search.advanced_filter(/^\@([a-zA-Z0-9_\-.\p{Han}]+)$/i) do |posts, match|
-    username = match.downcase
-
-    user_id = User.where(staged: false).where(username_lower: username).pluck_first(:id)
-
-    if !user_id && username == "me"
-      user_id = @guardian.user&.id
-    end
-
-    if user_id
-      posts.where("posts.user_id = #{user_id}")
-    else
-      posts.where("1 = 0")
+  if SiteSetting.unicode_usernames?
+    regexp = Regexp.new("(?i-mx:^\\@([a-zA-Z0-9_\\-.#{SiteSetting.allowed_unicode_username_characters}]+)$)")
+    Search.advanced_filter(regexp) do |posts, match|
+      username = match.downcase
+  
+      user_id = User.where(staged: false).where(username_lower: username).pluck_first(:id)
+  
+      if !user_id && username == "me"
+        user_id = @guardian.user&.id
+      end
+  
+      if user_id
+        posts.where("posts.user_id = #{user_id}")
+      else
+        posts.where("1 = 0")
+      end
     end
   end
+
+  
 end
