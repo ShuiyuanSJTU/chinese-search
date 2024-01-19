@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # name: chinese-search
-# version: 0.4
+# version: 0.5
 # authors: chenyxuan
 # url: https://github.com/ShuiyuanSJTU/chinese-search
 
@@ -28,15 +28,13 @@ after_initialize do
               if purpose == :query
                 segments = CppjiebaRb.segment(match_data.to_s, mode: :mix)
               else
-                segments = CppjiebaRb.segment(match_data.to_s, mode: :mix) + CppjiebaRb.segment(match_data.to_s, mode: :full)
+                segments = CppjiebaRb.segment(match_data.to_s, mode: :full)
               end
-              # mainly difference from original above
-
-              if ts_config != 'english'
-                segments = CppjiebaRb.filter_stop_word(segments)
-              end
-
+              
               segments = segments.filter { |s| s.present? }
+              segments = segments.reject { |item| "，。！？；：“”‘’【】《》（）".include?(item) }
+              # mainly difference from original above
+              
               segmented_data << segments.join(' ')
             else
               segmented_data << match_data.to_s.squish
