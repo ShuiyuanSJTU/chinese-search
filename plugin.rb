@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # name: chinese-search
-# version: 0.5
+# version: 0.6
 # authors: chenyxuan
 # url: https://github.com/ShuiyuanSJTU/chinese-search
 
@@ -25,10 +25,10 @@ after_initialize do
 
             if match_data[:chinese]
               # mainly difference from original below
-              if purpose == :query
-                segments = CppjiebaRb.segment(match_data.to_s, mode: :mix)
-              else
+              if purpose == :index
                 segments = CppjiebaRb.segment(match_data.to_s, mode: :full)
+              else
+                segments = CppjiebaRb.segment(match_data.to_s, mode: :mix)
               end
               
               segments = segments.filter { |s| s.present? }
