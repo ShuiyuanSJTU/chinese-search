@@ -26,7 +26,9 @@ after_initialize do
             if match_data[:chinese]
               # mainly difference from original below
               if purpose == :index
-                segments = CppjiebaRb.segment(match_data.to_s, mode: :full)
+                segments_mix = CppjiebaRb.segment(match_data.to_s, mode: :mix)
+                segments_full = CppjiebaRb.segment(match_data.to_s, mode: :full)
+                segments = segments_mix.concat (segments_full.to_set - segments_mix.to_set).to_a
               else
                 segments = CppjiebaRb.segment(match_data.to_s, mode: :mix)
               end
